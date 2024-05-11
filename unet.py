@@ -7,7 +7,9 @@ class DownBlock(nn.Module):
         super().__init__()
         self.conv = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, 3),
+            nn.ReLU(),
             nn.Conv2d(out_channels, out_channels, 3),
+            nn.ReLU(),
         )
         self.pool = nn.MaxPool2d(2)
 
@@ -22,7 +24,9 @@ class UpBlock(nn.Module):
         self.up = nn.ConvTranspose2d(in_channels, out_channels, 2, stride=2)
         self.conv = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, 3),
+            nn.ReLU(),
             nn.Conv2d(out_channels, out_channels, 3),
+            nn.ReLU(),
         )
 
     def forward(self, to_upsample, from_contract):
@@ -54,7 +58,9 @@ class UNet(nn.Module):
         )
         self.middle = nn.Sequential(
             nn.Conv2d(512, 1024, 3),  # 1024 x 30 x 30
+            nn.ReLU(),
             nn.Conv2d(1024, 1024, 3),  # 512 x 28 x 28
+            nn.ReLU(),
         )
         self.up = nn.ModuleList(
             [

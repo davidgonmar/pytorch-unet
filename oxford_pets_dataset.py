@@ -107,7 +107,7 @@ class OxfordPetsDataset(Dataset):
     def __getitem__(self, idx):
         filename = self.split_filenames[idx]
         image = Image.open(self.raw_folder / "images" / (filename + ".jpg"))
-
+        image = np.array(image)[:, :, :3]
         trimap = Image.open(
             self.raw_folder / "annotations" / "trimaps" / (filename + ".png")
         )
@@ -116,6 +116,7 @@ class OxfordPetsDataset(Dataset):
         mask[(mask == 1.0) | (mask == 3.0)] = 1.0
         mask = mask.unsqueeze(0)  # add channel dim
         # images in PIL are H x W x C, we need C x H x W and normalize to [0, 1]
-        img = torch.tensor(np.array(image)).permute(2, 0, 1).to(torch.float32) / 255.0
-
+        img = torch.tensor(image).permute(2, 0, 1).to(torch.float32) / 255.0
+        assert img.shape[0] == 3, f"got {img.shape[0]} channels"
+        assert mask.shape[0] == 1, f"got {mask.shape[0]} channels"
         return self.img_transform(img), self.mask_transform(mask)
